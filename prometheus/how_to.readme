@@ -1,0 +1,26 @@
+
+1 - start prometheus with bridge network to enable communication between host and container 
+(after telegraf - telegraf needs to be runnning)
+
+source: https://stackoverflow.com/questions/24319662/from-inside-of-a-docker-container-how-do-i-connect-to-the-localhost-of-the-mach
+
+
+
+docker run -d -p 9090:9090 --name=prometheus --network="bridge" -v /home/bs-coelho/workspace/observability_project/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+
+
+Get IP address on that bridge network: sudo ip addr show docker0
+
+In this case was: 172.17.0.1
+
+Configure prometheus.yml with this IP
+
+ - job_name: telegraf
+    static_configs:
+    - targets:
+      - "172.17.0.1:9273"
+
+
+
+
+test -> curl http://192.168.1.93:9090/

@@ -1,0 +1,33 @@
+metrics:
+- https://grafana.com/grafana/dashboards/11051-telegraf-system-dashboard/
+- https://grafana.com/grafana/dashboards/13021-system-metrics-for-the-linux-hosts/
+- https://grafana.com/grafana/dashboards/6149-system-metrics-single/
+
+
+how to configure Grafana (datasources and dashboards)
+- https://grafana.com/tutorials/provision-dashboards-and-data-sources/
+
+
+
+
+Daboards 
+
+They can be configured:
+# Path to the default home dashboard. If this value is empty, then Grafana uses StaticRootPath + "dashboards/home.json"
+default_home_dashboard_path =
+
+
+https://grafana.com/tutorials/provision-dashboards-and-data-sources/
+
+
+Was necessary to grant privileges:
+chown -R <personal local user> /path/to/local/volume/folder && chmod -R 777 /path/to/local/volume/folder
+
+e.g:chown -R bs-coelho grafana-data/ && chmod -R 777 grafana-data/
+
+
+docker run -d --name grafana -p 9000:3000 -e GF_DEFAULT_INSTANCE_NAME=my-grafana -e GF_PATHS_PROVISIONING=/etc/grafana/conf/provisioning -e GF_SECURITY_ADMIN_USER=bs-coelho -e GF_SECURITY_ADMIN_PASSWORD=bruno123 -v /home/bs-coelho/workspace/observability_project/grafana/grafana-data/conf:/etc/grafana/conf/ grafana/grafana:8.3.0
+
+- GF_PATHS_PROVISIONING -> specify which folder we will have the conf files (in this case, provisiong files)
+
+scp -r grafana/conf bs-coelho@192.168.1.93:~/workspace/observability_project/grafana/grafana-data/

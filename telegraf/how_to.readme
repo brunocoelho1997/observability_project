@@ -1,0 +1,55 @@
+We can have two apprachs:
+- use telegraf with influxdb (it's necessary to configure it in outputs)
+- however, we also can use telegraf without influx... using only telegraf as output of metrics to prometheus
+
+To appach 1:
+- influxdb: https://thenewstack.io/how-to-setup-influxdb-telegraf-and-grafana-on-docker-part-1/
+- telegraf: https://thenewstack.io/how-to-setup-influxdb-telegraf-and-grafana-on-docker-part-2/ 
+
+1 - Create a docker network
+
+docker network create --driver bridge influxdb-telegraf-net
+
+2 - Start influxdb
+
+docker run -d --name=influxdb \
+ -p 8086:8086 \
+ -v  /home/bs-coelho/workspace/observability_project/telegraf/influxdb_data:/root/.influxdb2 \
+      --net=influxdb-telegraf-net \
+      influxdb:2.4.0
+
+
+3 - Configure influx db
+
+docker exec -it influxdb influx setup
+
+
+1 - Start telegraf
+
+(it's necessary to configure the influxdb output)
+
+docker run -d --name=telegraf \
+      -v /home/bs-coelho/workspace/observability_project/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf \
+      --net=influxdb-telegraf-net \
+      telegraf
+
+
+
+To approach 2:
+
+
+1 - start telegraf
+
+docker run -d --name=telegraf -p 9273:9273 \
+	-v /home/bs-coelho/workspace/observability_project/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf \
+	-v /var/run/docker.sock:/var/run/docker.sock \
+	--user telegraf:$(stat -c '%g' /var/run/docker.sock) \
+	telegraf
+
+
+
+check logs: docker logs telegraf -f
+
+
+2 - test telegraf: curl http://192.168.1.93:9273/metrics
+
